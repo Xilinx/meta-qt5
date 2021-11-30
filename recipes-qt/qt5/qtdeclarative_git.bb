@@ -16,9 +16,11 @@ LIC_FILES_CHKSUM = " \
 # 5.15.meta-qt5.1
 SRC_URI += " \
     file://0001-Use-OE_QMAKE_PATH_EXTERNAL_HOST_BINS-to-locate-qmlca.patch \
+    file://0001-yarr-Include-limits-for-numeric_limits.patch \
+    file://0001-qmldebug-Include-limits-header.patch \
 "
 
-LDFLAGS_append_riscv64 = " -pthread"
+LDFLAGS:append:riscv64 = " -pthread"
 
 DEPENDS += "qtbase qtdeclarative-native"
 
@@ -27,7 +29,28 @@ PACKAGECONFIG[qml-debug] = "-qml-debug,-no-qml-debug"
 PACKAGECONFIG[qml-network] = "-qml-network, -no-qml-network"
 PACKAGECONFIG[static] = ",,qtdeclarative-native"
 
-do_install_append_class-nativesdk() {
+EXTRA_QMAKEVARS_CONFIGURE += "${PACKAGECONFIG_CONFARGS}"
+
+do_install_ptest() {
+    mkdir -p ${D}${PTEST_PATH}
+    for var in `find ${B}/tests/auto/ -name tst_*`; do
+        case=$(basename ${var})
+        if [ -z `echo ${case} | grep '\.'` ]; then
+            dname=$(dirname ${var})
+            pdir=$(basename ${dname})
+            echo ${pdir}/${case} >> ${D}${PTEST_PATH}/tst_list
+
+            mkdir ${D}${PTEST_PATH}/${pdir}
+            install -m 0744 ${var} ${D}${PTEST_PATH}/${pdir}
+            data_dir=${S}/${dname##${B}}/data
+            if [ -d ${data_dir} ]; then
+                cp -r ${data_dir} ${D}${PTEST_PATH}/${pdir}
+            fi
+        fi
+    done
+}
+
+do_install:append:class-nativesdk() {
     # qml files not needed in nativesdk
     rm -rf ${D}${OE_QMAKE_PATH_QML}
 }

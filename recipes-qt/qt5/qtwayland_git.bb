@@ -1,8 +1,10 @@
 require qt5.inc
 require qt5-git.inc
 
+inherit pkgconfig
+
 DEPENDS += "qtbase qtdeclarative wayland wayland-native qtwayland-native"
-DEPENDS_append_class-target = " libxkbcommon"
+DEPENDS:append:class-target = " libxkbcommon"
 
 LICENSE = "GFDL-1.3 & BSD & ( GPL-3.0 & The-Qt-Company-GPL-Exception-1.0 | The-Qt-Company-Commercial ) & ( GPL-2.0+ | LGPL-3.0 | The-Qt-Company-Commercial )"
 LIC_FILES_CHKSUM = " \
@@ -15,21 +17,23 @@ LIC_FILES_CHKSUM = " \
 
 # Patches from https://github.com/meta-qt5/qtwayland/commits/b5.15
 # 5.15.meta-qt5.1
-SRC_URI += "file://0001-tst_seatv4-Include-array.patch"
+SRC_URI += "file://0001-tst_seatv4-Include-array.patch \
+            file://0001-linux-dmabuf-unstable-v1-Include-missing-array-heade.patch \
+           "
 
 PACKAGECONFIG ?= " \
     wayland-client \
     wayland-server \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'wayland-egl', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl wayland', 'wayland-egl', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xcomposite-egl xcomposite-glx', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', 'wayland-vulkan-server-buffer', '', d)} \
 "
-PACKAGECONFIG_class-native ?= ""
-PACKAGECONFIG_class-nativesdk ?= ""
-QMAKE_PROFILES_class-native = "${S}/src/qtwaylandscanner"
-QMAKE_PROFILES_class-nativesdk = "${S}/src/qtwaylandscanner"
-B_class-native = "${SEPB}/src/qtwaylandscanner"
-B_class-nativesdk = "${SEPB}/src/qtwaylandscanner"
+PACKAGECONFIG:class-native ?= ""
+PACKAGECONFIG:class-nativesdk ?= ""
+QMAKE_PROFILES:class-native = "${S}/src/qtwaylandscanner"
+QMAKE_PROFILES:class-nativesdk = "${S}/src/qtwaylandscanner"
+B:class-native = "${SEPB}/src/qtwaylandscanner"
+B:class-nativesdk = "${SEPB}/src/qtwaylandscanner"
 
 PACKAGECONFIG[wayland-client] = "-feature-wayland-client,-no-feature-wayland-client"
 PACKAGECONFIG[wayland-server] = "-feature-wayland-server,-no-feature-wayland-server"
@@ -49,4 +53,4 @@ BBCLASSEXTEND =+ "native nativesdk"
 
 # The same issue as in qtbase:
 # http://errors.yoctoproject.org/Errors/Details/152641/
-LDFLAGS_append = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-gold', ' -fuse-ld=bfd ', '', d)}"
+LDFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-gold', ' -fuse-ld=bfd ', '', d)}"

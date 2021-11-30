@@ -38,6 +38,7 @@ SRC_URI += "\
     file://0018-tst_qpainter-FE_-macros-are-not-defined-for-every-pl.patch \
     file://0019-Define-__NR_futex-if-it-does-not-exist.patch \
     file://0020-Revert-Fix-workaround-in-pthread-destructor.patch \
+    file://0021-qfloat16-Include-limits-header.patch \
 "
 
 # common for qtbase-native and nativesdk-qtbase
@@ -55,7 +56,7 @@ SRC_URI += " \
 
 CLEANBROKEN = "1"
 
-XPLATFORM_toolchain-clang = "linux-oe-clang"
+XPLATFORM:toolchain-clang = "linux-oe-clang"
 XPLATFORM ?= "linux-oe-g++"
 
 PACKAGECONFIG ?= ""
@@ -108,7 +109,7 @@ QT_CONFIG_FLAGS = " \
 # since we cannot set empty set filename to a not existent file
 deltask generate_qt_config_file
 
-do_configure_prepend() {
+do_configure:prepend() {
     # Regenerate header files when they are included in source tarball
     # Otherwise cmake files don't set PRIVATE_HEADERS correctly
     rm -rf ${S}/include

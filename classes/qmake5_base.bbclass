@@ -1,5 +1,5 @@
 # hardcode linux, because that's what 0001-Add-linux-oe-g-platform.patch adds
-XPLATFORM_toolchain-clang = "linux-oe-clang"
+XPLATFORM:toolchain-clang = "linux-oe-clang"
 XPLATFORM ?= "linux-oe-g++"
 
 OE_QMAKE_PLATFORM_NATIVE = "${XPLATFORM}"
@@ -27,6 +27,7 @@ EXTRA_OEMAKE = " \
     OE_QMAKE_LINK='${OE_QMAKE_LINK}' \
     OE_QMAKE_LDFLAGS='${OE_QMAKE_LDFLAGS}' \
     OE_QMAKE_AR='${OE_QMAKE_AR}' \
+    OE_QMAKE_OBJCOPY='${OE_QMAKE_OBJCOPY}' \
     OE_QMAKE_STRIP='${OE_QMAKE_STRIP}' \
     OE_QMAKE_INCDIR_QT='${STAGING_DIR_TARGET}/${OE_QMAKE_PATH_HEADERS}' \
 "
@@ -39,6 +40,7 @@ export OE_QMAKE_CXXFLAGS = "${CXXFLAGS}"
 export OE_QMAKE_LINK = "${CXX}"
 export OE_QMAKE_LDFLAGS = "${LDFLAGS}"
 export OE_QMAKE_AR = "${AR}"
+export OE_QMAKE_OBJCOPY = "${OBJCOPY}"
 export OE_QMAKE_STRIP = "echo"
 
 # qmake reads if from shell environment

@@ -43,6 +43,7 @@ SRC_URI += "\
     file://0018-tst_qpainter-FE_-macros-are-not-defined-for-every-pl.patch \
     file://0019-Define-__NR_futex-if-it-does-not-exist.patch \
     file://0020-Revert-Fix-workaround-in-pthread-destructor.patch \
+    file://0021-qfloat16-Include-limits-header.patch \
 "
 
 # common for qtbase-native and nativesdk-qtbase
@@ -60,12 +61,12 @@ SRC_URI += " \
 
 PACKAGE_DEBUG_SPLIT_STYLE = "debug-without-src"
 
-FILES_${PN}-dev += " \
+FILES:${PN}-dev += " \
     ${OE_QMAKE_PATH_ARCHDATA}/mkspecs \
     ${OE_QMAKE_PATH_LIBS}/*.prl \
 "
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${SDKPATHNATIVE}/environment-setup.d \
     ${OE_QMAKE_PATH_PLUGINS} \
     ${OE_QMAKE_PATH_LIBS}/metatypes \
@@ -75,7 +76,7 @@ FILES_${PN} += " \
 # collisions with qt4. This would trigger debian.bbclass to rename the
 # package, since it doesn't detect binaries in subdirs. Explicitly
 # disable package auto-renaming for the tools-package.
-DEBIAN_NOAUTONAME_${PN} = "1"
+DEBIAN_NOAUTONAME:${PN} = "1"
 
 PACKAGECONFIG ?= ""
 PACKAGECONFIG[gui] = "-gui -qpa offscreen,-no-gui,"
@@ -176,6 +177,7 @@ fakeroot do_generate_qt_environment_file() {
     echo 'export OE_QMAKE_CXX="$CXX"' >> $script
     echo 'export OE_QMAKE_LINK="$CXX"' >> $script
     echo 'export OE_QMAKE_AR=$AR' >> $script
+    echo 'export OE_QMAKE_OBJCOPY=$OBJCOPY' >> $script
     echo 'export OE_QMAKE_STRIP=$STRIP' >> $script
     echo 'export QT_CONF_PATH=${OE_QMAKE_PATH_HOST_BINS}/qt.conf' >> $script
     echo 'export OE_QMAKE_LIBDIR_QT=`qmake -query QT_INSTALL_LIBS`' >> $script
