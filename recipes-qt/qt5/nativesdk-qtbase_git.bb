@@ -15,6 +15,8 @@ LIC_FILES_CHKSUM = " \
 
 QT_MODULE = "qtbase"
 
+inherit pkgconfig
+
 require nativesdk-qt5.inc
 require qt5-git.inc
 
@@ -44,6 +46,7 @@ SRC_URI += "\
     file://0019-Define-__NR_futex-if-it-does-not-exist.patch \
     file://0020-Revert-Fix-workaround-in-pthread-destructor.patch \
     file://0021-qfloat16-Include-limits-header.patch \
+    file://0022-fix_timezone_dst.patch \
 "
 
 # common for qtbase-native and nativesdk-qtbase
